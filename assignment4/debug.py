@@ -32,4 +32,3 @@ mpl.use('agg')
 
 import matplotlib.pyplot as plt
 
-test
