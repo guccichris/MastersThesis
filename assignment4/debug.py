@@ -2,7 +2,7 @@
 # Description: Trying various plots for debugging gradientFlow.py
 # Author: Christopher Parker
 # Created: Thu Sep 28, 2017 | 12:05P EDT
-# Last Modified: Thu Sep 28, 2017 | 12:08P EDT
+# Last Modified: Thu Sep 28, 2017 | 01:53P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -32,4 +32,4 @@ mpl.use('agg')
 
 import matplotlib.pyplot as plt
 
-
+test
