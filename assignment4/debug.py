@@ -2,7 +2,7 @@
 # Description: Trying various plots for debugging gradientFlow.py
 # Author: Christopher Parker
 # Created: Thu Sep 28, 2017 | 12:05P EDT
-# Last Modified: Fri Sep 29, 2017 | 01:37P EDT
+# Last Modified: Fri Sep 29, 2017 | 01:50P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -38,11 +38,15 @@ gFlow = np.loadtxt("gradientFlow_output.txt")
 # although t isn't used for anything, it must be initialized and passed
 t = np.linspace(0,10,101)
 
-# create a linspace for x to move from -.5 to .5
+# create a linspace for x to move from -.5 to .5 (and same for y)
 deltaX = np.linspace(-.5,.5,100)
+deltaY = np.linspace(-.5,.5,100)
 
 # create the vector r (which represents the floating atom) w/ constant y & z
-r = [deltaX,0,1]
+r_x = [deltaX, 0, 1]
+
+# this time create r with y changing, x & z constant
+r_y = [.5, deltaY, .8]
 
 # initialize an array to hold the values of the VDW force at each x
 vdwForces = []
@@ -51,16 +55,16 @@ vdwForces = []
 # in order to find the total VDW force exerted on the floating atom at
 # each x value
 for i in range(len(deltaX)):
-    vdwForces.append(vdwForce([r[0][i],r[1],r[2]],t)[0])
+    vdwForces.append(vdwForce([r_y[0],r_y[1][i],r_y[2]],t)[1])
 
 # now we plot deltaX on the x-axis and vdwForces on the y-axis
 plt.figure()
 
-plt.plot(deltaX,vdwForces,'k')
+plt.plot(deltaY,vdwForces,'k')
 
 # label the axes
-plt.xlabel('x')
+plt.xlabel('y')
 plt.ylabel('Total VDW Force')
 
-plt.savefig('deltaX_vs_VDWforce.png')
+plt.savefig('deltaY_vs_VDWforce_5_8.png')
 #plt.show()
