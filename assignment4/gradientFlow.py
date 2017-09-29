@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Thu Sep 28, 2017 | 12:05P EDT
+# Last Modified: Fri Sep 29, 2017 | 11:58P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -29,7 +29,6 @@
 
 import numpy as np
 import scipy as sci
-import IPython
 from IPython import embed
 from scipy.integrate import odeint
 
