@@ -3,7 +3,7 @@
 #               to ensure that I am getting the proper output
 # Author: Christopher Parker
 # Created: Fri Sep 29, 2017 | 01:54P EDT
-# Last Modified: Mon Oct 02, 2017 | 02:17P EDT
+# Last Modified: Mon Oct 02, 2017 | 02:22P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -63,8 +63,7 @@ def simpleODE(r,t):
             #total_VDW_force += VDW_force
 
 
-    #print('total_VDW_force',total_VDW_force)
-    return total_VDW_force
+    return RETURN_VALUE  # not sure what this will be yet
 
 def dist(r1,r2):
     return np.sqrt((r1[0]-r2[0])**2 + (r1[1] - r2[1])**2 + (r1[2] - r2[2])**2)
@@ -77,7 +76,7 @@ r0 = np.array([0, 0, .6])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
-gFlow = odeint(vdwForce,r0,t,rtol=1.4e-14)
+gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
 
 # write the output to a file in order to easily read and plot it
 

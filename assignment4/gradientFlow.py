@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Mon Oct 02, 2017 | 02:16P EDT
+# Last Modified: Mon Oct 02, 2017 | 02:22P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -73,25 +73,24 @@ def vdwForce(r,t):
             total_VDW_force += VDW_force
 
 
-    #print('total_VDW_force',total_VDW_force)
     return total_VDW_force
 
 def dist(r1,r2):
     return np.sqrt((r1[0]-r2[0])**2 + (r1[1] - r2[1])**2 + (r1[2] - r2[2])**2)
 
 # define the time interval for the gradient flow
-t = np.linspace(0,10,501)
+t = np.linspace(0,100,5001)
 
 # define the starting point of the floater
-r0 = np.array([0, 0, .6])
+r0 = np.array([0, 0, .9])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
-gFlow = odeint(vdwForce,r0,t,rtol=1.4e-14)
+gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
 
 # write the output to a file in order to easily read and plot it
 
-#np.savetxt("gradientFlow_output.txt",gFlow)
+np.savetxt("gradientFlow_output.txt",gFlow)
 
 
 print(gFlow)
