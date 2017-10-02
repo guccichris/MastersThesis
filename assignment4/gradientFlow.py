@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Fri Sep 29, 2017 | 11:58P EDT
+# Last Modified: Mon Oct 02, 2017 | 02:07P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -63,6 +63,9 @@ def vdwForce(r,t):
             dz = r[2]
             r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
 
+            #r2 = [a[i],a[j],0]
+            #r_hat = dist(r,r2)
+            #d = r - r2
             # this is the gradient of V (computed by hand). 
             gradV_common = (12*w*((sigma**6)/(r_hat**8)-(sigma**12)/(r_hat**14)))
             VDW_force = -gradV_common*np.array([dx, dy, dz])
@@ -73,10 +76,11 @@ def vdwForce(r,t):
     #print('total_VDW_force',total_VDW_force)
     return total_VDW_force
 
-
+def dist(r1,r2):
+    return np.sqrt((r1[0]-r2[0])**2 + (r1[1] - r2[1])**2 + (r1[2] - r2[2])**2)
 
 # define the time interval for the gradient flow
-t = np.linspace(0,10,101)
+t = np.linspace(0,100,5001)
 
 # define the starting point of the floater
 r0 = np.array([0, 0, .6])
@@ -84,11 +88,11 @@ print(vdwForce(r0,t))
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
-#gFlow = odeint(vdwForce,r0,t,rtol=1.4e-14)
+gFlow = odeint(vdwForce,r0,t,rtol=1.4e-14)
 
 # write the output to a file in order to easily read and plot it
 
 #np.savetxt("gradientFlow_output.txt",gFlow)
 
 
-#print(gFlow)
+print(gFlow)
