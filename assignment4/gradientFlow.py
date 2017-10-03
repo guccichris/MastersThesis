@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Mon Oct 02, 2017 | 02:22P EDT
+# Last Modified: Tue Oct 03, 2017 | 11:40P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -31,6 +31,7 @@ import numpy as np
 import scipy as sci
 from IPython import embed
 from scipy.integrate import odeint
+import matplotlib.pyplot as plt
 
 # first, we set the constants:
 w = 1
@@ -51,38 +52,34 @@ def vdwForce(r,t):
 
 
     # set the number of surrounding substrate atoms to consider
-    a = np.arange(-6,7,1)
+    a = np.arange(-1,2,1)
 
     # compute the distances of the floating atom from the substrate atoms
     for j in range(len(a)):
         for i in range(len(a)):
 
             # compute r_hat(r) = ||r||
-            #dx = k_x + a[i]*h_x
-            #dy = k_y + a[j]*h_y
-            #dz = r[2]
-            #r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
+            dx = k_x + a[i]*h_x
+            dy = k_y + a[j]*h_y
+            dz = r[2]
+            r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
 
-            r2 = [a[i],a[j],0]
-            r_hat = dist(r,r2)
-            d = r - r2
             # this is the gradient of V (computed by hand). 
             gradV_common = (12*w*((sigma**6)/(r_hat**8)-(sigma**12)/(r_hat**14)))
-            VDW_force = -gradV_common*np.array([d[0], d[1], d[2]])
+            VDW_force = -gradV_common*np.array([dx, dy, dz])
 
             total_VDW_force += VDW_force
 
-
+    #print('F: ',total_VDW_force)
     return total_VDW_force
 
-def dist(r1,r2):
-    return np.sqrt((r1[0]-r2[0])**2 + (r1[1] - r2[1])**2 + (r1[2] - r2[2])**2)
 
+deltaY = np.linspace(-.5,.5,10000)
 # define the time interval for the gradient flow
-t = np.linspace(0,100,5001)
+t = np.linspace(0,10,501)
 
 # define the starting point of the floater
-r0 = np.array([0, 0, .9])
+r0 = np.array([0, 0, 1])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
@@ -90,7 +87,7 @@ gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
 
 # write the output to a file in order to easily read and plot it
 
-np.savetxt("gradientFlow_output.txt",gFlow)
+#np.savetxt("gradientFlow_output.txt",gFlow)
 
 
 print(gFlow)

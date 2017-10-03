@@ -3,7 +3,7 @@
 #               to ensure that I am getting the proper output
 # Author: Christopher Parker
 # Created: Fri Sep 29, 2017 | 01:54P EDT
-# Last Modified: Mon Oct 02, 2017 | 02:22P EDT
+# Last Modified: Tue Oct 03, 2017 | 11:06P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -37,9 +37,15 @@ from scipy.integrate import odeint
 # (Just have to keep in mind that I need to keep the nested for loops in order
 # to bebug properly)
 
+h_x = 1
+h_y = 1
 
 # this is the function that will be passed to the ODE solver as the RHS
 def simpleODE(r,t):
+
+    # compute the offsets
+    k_x = r[0]%h_x
+    k_y = r[1]%h_y
 
     # need to loop through a 2x2 matrix for w/e this function is going to be
     #
@@ -51,36 +57,26 @@ def simpleODE(r,t):
         for i in range(len(a)):
 
             # compute r_hat(r) = ||r||
-            #dx = k_x + a[i]*h_x
-            #dy = k_y + a[j]*h_y
-            #dz = r[2]
-            #r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
-
-            # this is the gradient of V (computed by hand). 
-            #gradV_common = (12*w*((sigma**6)/(r_hat**8)-(sigma**12)/(r_hat**14)))
-            #VDW_force = -gradV_common*np.array([d[0], d[1], d[2]])
-
-            #total_VDW_force += VDW_force
+            dx = k_x + a[i]*h_x
+            dy = k_y + a[j]*h_y
+            dz = r[2]
+            print('dx: ', dx, 'dy: ', dy, 'dz: ', dz)
+            r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
+            print('r_hat: ', r_hat)
 
 
-    return RETURN_VALUE  # not sure what this will be yet
+    #return RETURN_VALUE  # not sure what this will be yet
 
-def dist(r1,r2):
-    return np.sqrt((r1[0]-r2[0])**2 + (r1[1] - r2[1])**2 + (r1[2] - r2[2])**2)
 
 # define the time interval for the gradient flow
 t = np.linspace(0,100,5001)
 
 # define the starting point of the floater
-r0 = np.array([0, 0, .6])
+r0 = np.array([1, 1, 1])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
-gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
-
-# write the output to a file in order to easily read and plot it
-
-#np.savetxt("gradientFlow_output.txt",gFlow)
+gFlow = odeint(simpleODE,r0,t,rtol=1.4e-20)
 
 
 print(gFlow)
