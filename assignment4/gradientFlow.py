@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Tue Oct 03, 2017 | 11:40P EDT
+# Last Modified: Tue Oct 10, 2017 | 10:44P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -47,20 +47,20 @@ def vdwForce(r,t):
     total_VDW_force = np.zeros((3,))
 
     # compute the offsets
-    k_x = r[0]%h_x
-    k_y = r[1]%h_y
+    k_x = (r[0]+.5)%h_x
+    k_y = (r[1]+.5)%h_y
 
 
     # set the number of surrounding substrate atoms to consider
-    a = np.arange(-1,2,1)
+    a = np.arange(-6,7,1)
 
     # compute the distances of the floating atom from the substrate atoms
     for j in range(len(a)):
         for i in range(len(a)):
 
             # compute r_hat(r) = ||r||
-            dx = k_x + a[i]*h_x
-            dy = k_y + a[j]*h_y
+            dx = np.abs(k_x - .5) + a[i]*h_x
+            dy = np.abs(k_y - .5) + a[j]*h_y
             dz = r[2]
             r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
 
@@ -74,12 +74,13 @@ def vdwForce(r,t):
     return total_VDW_force
 
 
-deltaY = np.linspace(-.5,.5,10000)
+#deltaY = np.linspace(-.5,.5,10000)
+
 # define the time interval for the gradient flow
 t = np.linspace(0,10,501)
 
 # define the starting point of the floater
-r0 = np.array([0, 0, 1])
+r0 = np.array([.5, 1.5, .6])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array

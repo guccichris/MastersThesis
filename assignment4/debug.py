@@ -2,7 +2,7 @@
 # Description: Trying various plots for debugging gradientFlow.py
 # Author: Christopher Parker
 # Created: Thu Sep 28, 2017 | 12:05P EDT
-# Last Modified: Tue Oct 03, 2017 | 11:42P EDT
+# Last Modified: Tue Oct 03, 2017 | 11:55P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -32,8 +32,6 @@ from gradientFlow import vdwForce
 #mpl.use('agg')
 
 import matplotlib.pyplot as plt
-
-#gFlow = np.loadtxt("gradientFlow_output.txt")
 
 # although t isn't used for anything, it must be initialized and passed
 t = np.linspace(0,10,101)
@@ -65,6 +63,8 @@ plt.plot(deltaY,vdwForces,'ko')
 # label the axes
 plt.xlabel('y')
 plt.ylabel('Total VDW Force')
+
+# set axes limits
 plt.xlim([-1,1])
 plt.ylim([-1,1])
 
