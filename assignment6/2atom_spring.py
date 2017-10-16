@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Mon Oct 16, 2017 | 01:50P EDT
+# Last Modified: Mon Oct 16, 2017 | 01:52P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -67,7 +67,7 @@ def springForce(r,t):
             #dz = r[2]
             #r_hat = np.sqrt(dx**2 + dy**2 + dz**2)
 
-            # this is the gradient of E_s (computed by hand). 
+    # this is the gradient of E_s (computed by hand). 
     gradE_r1_common = (k_s*(norm(r1-r2) - l)/norm(r1 - r2))
     r1_spring_force = -gradE_r1_common*np.array([(r1[0]-r2[0]),(r1[1]-r2[1]),(r1[2]-r2[2])])
     r2_spring_force = -1*r1_spring_force
@@ -80,12 +80,12 @@ def springForce(r,t):
 # define the time interval for the gradient flow
 t = np.linspace(0,10,501)
 
-# define the starting point of the floater
+# define the starting point of the floaters
 r1 = np.array([1, 1, 1])
 r2 = np.array([0, 0, 1])
 r0 = np.concatenate([r1, r2])
 
-# compute the gradient flow equation for each value of r, and save
+# compute the gradient flow equation for each value of t, and save
 # the values in an array
 gFlow = odeint(springForce,r0,t,rtol=1.4e-20)
 
