@@ -1,8 +1,8 @@
-# File Name: gradientFlow.py
-# Description: This code will use grad(V) to compute numerical solutions to
-#               the ODEs created by the gradient flow equation.
+# File Name: changingSubstrateSize.py
+# Description: See when increasing the substrate size stops giving appreciable
+#               gains in accuracy vs increases in computation time
 # Author: Christopher Parker
-# Created: Wed Sep 20, 2017 | 12:58P EDT
+# Created: Tue Oct 10, 2017 | 01:32P EDT
 # Last Modified: Mon Oct 16, 2017 | 12:33P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
@@ -26,12 +26,16 @@
 #                                                                      #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
-
 import numpy as np
 import scipy as sci
+from numpy.linalg import norm
+import time
 from IPython import embed
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
+
+# start tracking the runtime of the program
+start_time = time.time()
 
 # first, we set the constants:
 w = 1
@@ -40,19 +44,25 @@ sigma = 1
 h_x = 1
 h_y = 1
 
+# initialize substrate size at a single atom
+l = 0
+
+# initialize vars used in computing error
+norm_VDW_force = 1
+final_VDW_force = 0
+
 # this is the function that will be passed to the ODE solver as the RHS
 def vdwForce(r,t):
-
-    # initialize total_VDW_force
-    total_VDW_force = np.zeros((3,))
 
     # compute the offsets
     k_x = (r[0]+.5)%h_x
     k_y = (r[1]+.5)%h_y
 
-
     # set the number of surrounding substrate atoms to consider
-    a = np.arange(-6,7,1)
+    a = np.arange(-l,l+1,1)
+
+    # initialize total_VDW_force
+    total_VDW_force = np.zeros((3,))
 
     # compute the distances of the floating atom from the substrate atoms
     for j in range(len(a)):
@@ -70,25 +80,44 @@ def vdwForce(r,t):
 
             total_VDW_force += VDW_force
 
-    #print('F: ',total_VDW_force)
+    n = len(total_VDW_force)
+    final_VDW_force = total_VDW_force[n-1]
+
+    # compute the norm of VDW Force at the final position of the particle (to
+    # gauge the accuracy for each substrate size). We would like it to be
+    # less than 10e-10
+    global norm_VDW_force
+    norm_VDW_force = norm(final_VDW_force)
+
+    # need this statement because the first time through the while loop gives
+    # a very small value of the norm (on the order of 10e-13), but then the
+    # norm increases on the next step.
+    if (norm_VDW_force < 10e-10):
+        norm_VDW_force = 1
+
     return total_VDW_force
 
-
-#deltaY = np.linspace(-.5,.5,10000)
-
-# define the time interval for the gradient flow
+# define the time interval for odeint
 t = np.linspace(0,10,501)
 
 # define the starting point of the floater
-r0 = np.array([.5, 2.5, .6])
+r0 = np.array([.5, .5, .6])
 
-# compute the gradient flow equation for each value of r, and save
-# the values in an array
-gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
+# define the error tolerance for the norm of the VDW force
+tol = 1.62e-6
 
-# write the output to a file in order to easily read and plot it
+while (norm_VDW_force >= tol):
 
-#np.savetxt("gradientFlow_output.txt",gFlow)
+    # compute the path of the particle (and more importantly it's final resting
+    # position)
+    gFlow = odeint(vdwForce, r0, t, rtol=1.4e-20)
+    l += 1
+    m = len(gFlow)
+    #print(gFlow[m-1])
+    print([norm_VDW_force, l-1])
 
+# stop tracking the runtime of the program
+stop_time = time.time()
+comp_time = stop_time - start_time
 
-print(gFlow)
+print(comp_time)
