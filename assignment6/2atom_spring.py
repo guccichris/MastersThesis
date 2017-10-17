@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Tue Oct 17, 2017 | 02:10P EDT
+# Last Modified: Tue Oct 17, 2017 | 02:20P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -103,6 +103,8 @@ def spring_and_VDWForce(r,t):
 
     total_spring_force = np.concatenate([r1_spring_force, r2_spring_force])
     total_spring_and_VDW_force = np.add(total_spring_force, total_VDW_force)
+
+    #print(total_VDW_force, total_spring_force)
 
     return total_spring_and_VDW_force
 
