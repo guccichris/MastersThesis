@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Mon Oct 16, 2017 | 02:25P EDT
+# Last Modified: Tue Oct 17, 2017 | 01:48P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -41,7 +41,7 @@ h_x = 1
 h_y = 1
 
 k_s = .1
-l = 1
+l = 2
 
 # this is the function that will be passed to the ODE solver as the RHS
 def spring_and_VDWForce(r,t):
@@ -49,7 +49,6 @@ def spring_and_VDWForce(r,t):
     # split r1 and r2
     r1 = r[:3]
     r2 = r[3:]
-    print(r1, r2)
 
     # initialize total_spring_force and total_VDW_force
     total_spring_force = np.zeros((6,))
@@ -103,21 +102,28 @@ def spring_and_VDWForce(r,t):
     r2_spring_force = -1*r1_spring_force
 
     total_spring_force = np.concatenate([r1_spring_force, r2_spring_force])
-    total_spring_and_VDW_force = total_spring_force + total_VDW_force
+    total_spring_and_VDW_force = [total_spring_force[k] + total_VDW_force[k] for k in range(len(total_VDW_force))]
 
     return total_spring_and_VDW_force
 
 
 # define the time interval for the gradient flow
-t = np.linspace(0,10,501)
+t = np.linspace(0,1000,501)
 
 # define the starting point of the floaters
-r1 = np.array([0, 1, 1])
+r1 = np.array([1, 1, 1])
 r2 = np.array([0, 0, 1])
 r0 = np.concatenate([r1, r2])
 
 # compute the gradient flow equation for each value of t, and save
 # the values in an array
 gFlow = odeint(spring_and_VDWForce,r0,t,rtol=1.4e-20)
+
+for elt in gFlow:
+    r1 = elt[:3]
+    r2 = elt[3:]
+    dist = norm(r1 - r2)
+    print(r1-r2)
+    print(dist)
 
 print(gFlow)

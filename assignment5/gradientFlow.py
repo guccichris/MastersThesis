@@ -3,7 +3,7 @@
 #               the ODEs created by the gradient flow equation.
 # Author: Christopher Parker
 # Created: Wed Sep 20, 2017 | 12:58P EDT
-# Last Modified: Mon Oct 16, 2017 | 12:33P EDT
+# Last Modified: Tue Oct 17, 2017 | 11:45P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -31,6 +31,7 @@ import numpy as np
 import scipy as sci
 from IPython import embed
 from scipy.integrate import odeint
+from numpy.linalg import norm
 import matplotlib.pyplot as plt
 
 # first, we set the constants:
@@ -40,6 +41,7 @@ sigma = 1
 h_x = 1
 h_y = 1
 
+norm_VDW_force = 0
 # this is the function that will be passed to the ODE solver as the RHS
 def vdwForce(r,t):
 
@@ -70,25 +72,23 @@ def vdwForce(r,t):
 
             total_VDW_force += VDW_force
 
-    #print('F: ',total_VDW_force)
+    final_VDW_force = total_VDW_force
+    global norm_VDW_force
+    norm_VDW_force = norm(final_VDW_force)
+    print(r)
+    print(total_VDW_force)
     return total_VDW_force
 
-
-#deltaY = np.linspace(-.5,.5,10000)
-
 # define the time interval for the gradient flow
-t = np.linspace(0,10,501)
+t = np.linspace(0,1000,501)
 
 # define the starting point of the floater
-r0 = np.array([.5, 2.5, .6])
+r0 = np.array([1, 1, .9])
 
 # compute the gradient flow equation for each value of r, and save
 # the values in an array
-gFlow = odeint(vdwForce,r0,t,rtol=1.4e-20)
+gFlow = odeint(vdwForce,r0,t,rtol=1.4e-10, atol=1.5e-10)
 
-# write the output to a file in order to easily read and plot it
-
-#np.savetxt("gradientFlow_output.txt",gFlow)
-
+print(norm_VDW_force)
 
 print(gFlow)

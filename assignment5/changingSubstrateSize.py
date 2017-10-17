@@ -3,7 +3,7 @@
 #               gains in accuracy vs increases in computation time
 # Author: Christopher Parker
 # Created: Tue Oct 10, 2017 | 01:32P EDT
-# Last Modified: Mon Oct 16, 2017 | 12:33P EDT
+# Last Modified: Tue Oct 17, 2017 | 11:15P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -98,7 +98,7 @@ def vdwForce(r,t):
     return total_VDW_force
 
 # define the time interval for odeint
-t = np.linspace(0,10,501)
+t = np.linspace(0,100,501)
 
 # define the starting point of the floater
 r0 = np.array([.5, .5, .6])
@@ -108,13 +108,20 @@ tol = 1.62e-6
 
 while (norm_VDW_force >= tol):
 
+    loop_start = time.time()
     # compute the path of the particle (and more importantly it's final resting
     # position)
     gFlow = odeint(vdwForce, r0, t, rtol=1.4e-20)
     l += 1
     m = len(gFlow)
+
     #print(gFlow[m-1])
-    print([norm_VDW_force, l-1])
+
+    # calculate the time it takes for each run of odeint with different
+    # substrate sizes
+    loop_time = time.time() - loop_start
+
+    print([norm_VDW_force, l-1, loop_time])
 
 # stop tracking the runtime of the program
 stop_time = time.time()
