@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Tue Oct 17, 2017 | 01:48P EDT
+# Last Modified: Tue Oct 17, 2017 | 02:09P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -40,8 +40,8 @@ sigma = 1
 h_x = 1
 h_y = 1
 
-k_s = .1
-l = 2
+k_s = 1
+l = 1
 
 # this is the function that will be passed to the ODE solver as the RHS
 def spring_and_VDWForce(r,t):
@@ -102,7 +102,7 @@ def spring_and_VDWForce(r,t):
     r2_spring_force = -1*r1_spring_force
 
     total_spring_force = np.concatenate([r1_spring_force, r2_spring_force])
-    total_spring_and_VDW_force = [total_spring_force[k] + total_VDW_force[k] for k in range(len(total_VDW_force))]
+    total_spring_and_VDW_force = np.add(total_spring_force, total_VDW_force)
 
     return total_spring_and_VDW_force
 
