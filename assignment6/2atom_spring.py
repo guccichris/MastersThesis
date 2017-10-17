@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Tue Oct 17, 2017 | 02:09P EDT
+# Last Modified: Tue Oct 17, 2017 | 02:10P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -123,7 +123,6 @@ for elt in gFlow:
     r1 = elt[:3]
     r2 = elt[3:]
     dist = norm(r1 - r2)
-    print(r1-r2)
     print(dist)
 
 print(gFlow)
