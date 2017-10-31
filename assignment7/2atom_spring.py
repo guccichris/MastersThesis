@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Thu Oct 26, 2017 | 12:03P EDT
+# Last Modified: Mon Oct 30, 2017 | 08:09P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -110,7 +110,7 @@ def spring_and_VDWForce(r,t):
 
 
 # define the time interval for the gradient flow
-t = np.linspace(0,1000,501)
+t = np.linspace(0,100,101)
 
 # define the starting point of the floaters
 r1 = np.array([1, 1, 1])
@@ -121,10 +121,5 @@ r0 = np.concatenate([r1, r2])
 # the values in an array
 gFlow = odeint(spring_and_VDWForce,r0,t,rtol=1.4e-1)
 
-for elt in gFlow:
-    r1 = elt[:3]
-    r2 = elt[3:]
-    dist = norm(r1 - r2)
-    print(dist)
-
 print(gFlow)
+np.savetxt('gFlow_2atoms.txt', gFlow)

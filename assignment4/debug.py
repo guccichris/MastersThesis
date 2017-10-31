@@ -2,7 +2,7 @@
 # Description: Trying various plots for debugging gradientFlow.py
 # Author: Christopher Parker
 # Created: Thu Sep 28, 2017 | 12:05P EDT
-# Last Modified: Tue Oct 10, 2017 | 11:35P EDT
+# Last Modified: Mon Oct 30, 2017 | 07:08P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -39,12 +39,15 @@ t = np.linspace(0,10,101)
 # create a linspace for x to move from -.5 to .5 (and same for y)
 deltaX = np.linspace(-.5,.5,10000)
 deltaY = np.linspace(-.5,.5,10000)
+# create a linspace for z to move from .8 to 1.2
 deltaZ = np.linspace(.8,1.2,1000)
 
 # create the vector r (which represents the floating atom) w/ constant y & z
 r_x = [deltaX, 0, 1]
 
+# this time create r with z changing, x & y constant
 r_z = [0, 0, deltaZ]
+
 # this time create r with y changing, x & z constant
 r_y = [1, deltaY, .8]
 
