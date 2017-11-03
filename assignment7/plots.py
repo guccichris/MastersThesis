@@ -41,7 +41,7 @@ floater1 = gFlow[:,:3]
 floater2 = gFlow[:,3:]
 
 # define the time interval over which the plots range
-t = np.linspace(0,100,101)
+t = np.linspace(0,1,1000)
 
 #
 # plot the distance between the atoms vs time
@@ -102,5 +102,6 @@ ax1.plot(midpt[:,0], midpt[:,1], midpt[:,2])
 
 # save the plot as cm_vs_time.png
 plt.savefig('cm_vs_time.png')
+
 
 plt.show()

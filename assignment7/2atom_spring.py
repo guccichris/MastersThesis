@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Mon Oct 30, 2017 | 08:09P EDT
+# Last Modified: Fri Nov 03, 2017 | 01:54P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -40,7 +40,7 @@ sigma = 1
 h_x = 1
 h_y = 1
 
-k_s = 1
+k_s = 0
 l = 2
 
 # this is the function that will be passed to the ODE solver as the RHS
@@ -110,7 +110,7 @@ def spring_and_VDWForce(r,t):
 
 
 # define the time interval for the gradient flow
-t = np.linspace(0,100,101)
+t = np.linspace(0,1,1000)
 
 # define the starting point of the floaters
 r1 = np.array([1, 1, 1])
