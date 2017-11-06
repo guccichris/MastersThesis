@@ -3,7 +3,7 @@
 #               substrate
 # Author: Christopher Parker
 # Created: Tue Oct 31, 2017 | 11:32P EDT
-# Last Modified: Fri Nov 03, 2017 | 02:10P EDT
+# Last Modified: Sat Nov 04, 2017 | 02:31P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -49,16 +49,16 @@ def spring_and_VDWForce(r,t):
     r2 = r[3:]
 
     # initialize total_spring_force and total_VDW_force
-    total_spring_force = np.zeros((6,))
-    total_VDW_force = np.zeros((6,))
+    total_spring_force = np.zeros(6)
+    total_VDW_force = np.zeros(6)
 
     # initialize offsets, dx, dy, dz and r_hat as arrays
-    k_x = np.zeros((2,))
-    k_y = np.zeros((2,))
-    dx = np.zeros((2,))
-    dy = np.zeros((2,))
-    dz = np.zeros((2,))
-    r_hat = np.zeros((2,))
+    k_x = np.zeros(2)
+    k_y = np.zeros(2)
+    dx = np.zeros(2)
+    dy = np.zeros(2)
+    dz = np.zeros(2)
+    r_hat = np.zeros(2)
 
     # compute the offsets
     k_x[0] = (r1[0]+.5)%h_x
@@ -68,7 +68,7 @@ def spring_and_VDWForce(r,t):
     k_y[1] = (r2[1]+.5)%h_y
 
     # set the number of surrounding substrate atoms to consider
-    a = np.arange(-2,3,1)
+    a = np.arange(-6,7,1)
 
     # compute the distances of the floating atom from the substrate atoms
     for j in range(len(a)):
@@ -118,7 +118,7 @@ def VDW(r):
     k_y = y%h_y
 
     E_v = 0
-    a = np.arange(-6,6,1) # set the values of r_j which we need
+    a = np.arange(-6,7,1) # set the values of r_j which we need
 
     for i in range(len(a)):
         for j in range(len(a)):

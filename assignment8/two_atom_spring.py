@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Fri Nov 03, 2017 | 11:37P EDT
+# Last Modified: Sat Nov 04, 2017 | 02:36P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -44,6 +44,9 @@ def spring_and_VDWForce(r,t):
     total_spring_force = np.zeros(6)
     total_VDW_force = np.zeros(6)
 
+    # set the number of surrounding substrate atoms to consider
+    a = np.arange(-6,7,1)
+
     # initialize offsets, dx, dy, dz and r_hat as arrays
     k_x = np.zeros(2)
     k_y = np.zeros(2)
@@ -58,9 +61,6 @@ def spring_and_VDWForce(r,t):
 
     k_x[1] = (r2[0]+.5)%h_x
     k_y[1] = (r2[1]+.5)%h_y
-
-    # set the number of surrounding substrate atoms to consider
-    a = np.arange(-2,3,1)
 
     # compute the distances of the floating atom from the substrate atoms
     for j in range(len(a)):
@@ -77,15 +77,16 @@ def spring_and_VDWForce(r,t):
             dz[1] = r2[2]
             r_hat[1] = np.sqrt(dx[1]**2 + dy[1]**2 + dz[1]**2)
 
-    # this is the gradient of V (computed by hand), it is used to compute the
-    # VDW forces acting on the floating atoms
-    gradV_common_r1 = (12*w*((sigma**6)/(r_hat[0]**8)-(sigma**12)/(r_hat[0]**14)))
-    VDW_force_r1 = -gradV_common_r1*np.array([dx[0], dy[0], dz[0]])
 
-    gradV_common_r2 = (12*w*((sigma**6)/(r_hat[1]**8)-(sigma**12)/(r_hat[1]**14)))
-    VDW_force_r2 = -gradV_common_r2*np.array([dx[1], dy[1], dz[1]])
+            # this is the gradient of V (computed by hand), it is used to compute the
+            # VDW forces acting on the floating atoms
+            gradV_common_r1 = (12*w*((sigma**6)/(r_hat[0]**8)-(sigma**12)/(r_hat[0]**14)))
+            VDW_force_r1 = -gradV_common_r1*np.array([dx[0], dy[0], dz[0]])
 
-    total_VDW_force += np.concatenate([VDW_force_r1, VDW_force_r2])
+            gradV_common_r2 = (12*w*((sigma**6)/(r_hat[1]**8)-(sigma**12)/(r_hat[1]**14)))
+            VDW_force_r2 = -gradV_common_r2*np.array([dx[1], dy[1], dz[1]])
+
+            total_VDW_force += np.concatenate([VDW_force_r1, VDW_force_r2])
 
     # this is the gradient of E_s (computed by hand), it is used to compute the
     # spring forces acting on the atoms
@@ -109,7 +110,7 @@ if __name__ == '__main__':
     h_x = 1
     h_y = 1
     
-    k_s = .1
+    k_s = 1
     l = 2
     
     # define the time interval for the gradient flow

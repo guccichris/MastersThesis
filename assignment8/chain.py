@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Fri Nov 03, 2017 | 11:23P EDT
+# Last Modified: Mon Nov 06, 2017 | 01:53P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -28,57 +28,112 @@
 import numpy as np
 from numpy.linalg import norm
 from scipy.integrate import odeint
+from IPython import embed
+import pprint
+
+# define the number of floaters
+floaters = np.zeros(4*3)
+n = len(floaters)
+
+def spring_and_VDWForce(floaters, t):
+
+    # compute number of atoms
+    m = int(len(floaters)/3)
+    n = int(len(floaters))
+
+    # split the atoms into 1x3 arrays
+    r = [[0 for i in range(3)] for j in range(m)]
+    for i in range(m):
+        r[i] = floaters[i*3:i*3+3]
+
+    # initialize arrays for the spring forces and VDW forces
+    combined_spring_forces = np.zeros(n)
+    combined_VDW_forces = np.zeros(n)
+    gradV_common = np.zeros(m)
+    VDW_force = [[0 for i in range(3)] for j in range(m)]
+    spring_force = [[0 for i in range(3)] for j in range(m)]
+
+    # initialize arrays for offsets, dx, dy, dz and rhat
+    k_x = np.zeros(m)
+    k_y = np.zeros(m)
+
+    dx = np.zeros(m)
+    dy = np.zeros(m)
+    dz = np.zeros(m)
+
+    # define the size of the substrate surrounding the floaters
+    a = np.arange(-6,7,1)
+
+    # rhat needs to be a 3x5x5 matrix in this case
+    rhat = np.zeros(m)
+
+    # compute offsets
+    for i in range(m):
+        k_x[i] = (floaters[i*3] + .5)%h_x
+        k_y[i] = (floaters[i*3] + .5)%h_y
+
+    # compute the distances of the floating atom from the substrate atoms
+    # and the VDW forces acting on them as a result
+    for j in range(len(a)):
+        for i in range(len(a)):
+            for k in range(m):
+
+                # compute dx, dy, dz and rhat
+                dx[k] = k_x[k] - .5 + a[i]*h_x
+                dy[k] = k_y[k] - .5 + a[j]*h_y
+                dz[k] = floaters[k*3 + 2]
+                rhat[k] = np.sqrt(dx[k]**2 + dy[k]**2 + dz[k]**2)
+
+                # this is the gradient of V (computed by hand), it is used to compute the
+                # VDW forces acting on the floating atoms
+                gradV_common[k] = (12*w*((sigma**6)/(rhat[k]**8)-(sigma**12)/(rhat[k]**14)))
+                VDW_force[k] = -gradV_common[k]*np.array([dx[k], dy[k], dz[k]])
+
+            # combine the VDW forces for all floating atoms
+            combined_VDW_forces += np.hstack(VDW_force)
+
+    # this is the gradient of E_s (computed by hand), it is used to compute the
+    # spring forces acting on the atoms
+    for i in range(m-1):
+        gradE_common = k_s*(norm(r[i]-r[i+1]) - l)/norm(r[i] - r[i+1])
+        spring_force[i] += -gradE_common*np.array([(r[i][0]-r[i+1][0]),(r[i][1]-r[i+1][1]),(r[i][2]-r[i+1][2])])
+        spring_force[i+1] = gradE_common*np.array([(r[i][0]-r[i+1][0]),(r[i][1]-r[i+1][1]),(r[i][2]-r[i+1][2])])
+
+
+    combined_spring_forces = np.hstack(spring_force)
+    total_spring_and_VDW_force = np.add(combined_spring_forces, combined_VDW_forces)
+
+    return total_spring_and_VDW_force
 
 if __name__ == '__main__':
 
     # set the constants
     w = 1
     sigma = 1
-    
+
     h_x = 1
     h_y = 1
-    
-    k_s = .1
-    l = 2
-    
+
+    k_s = 1
+    l = 1
+
     # define the time interval for the gradient flow
     t = np.linspace(0,1,1000)
-    
-    # define the starting point of the floaters
-    floaters = [[0 for x in range(3)] for y in range(3)]
-    
-    for i in range(len(floaters)):
-        floaters[i][0] = i
-        floaters[i][1] = i
-        floaters[i][2] = 1
-    
-    #odeint(spring_and_VDWForce, floaters, t, atol=1.4e-10)
 
-def spring_and_VDWForce(floaters):
+    # set the positions of the floating atoms
+    count = 0
+    for i in range(0,n,3):
+        floaters[i] = count
+        floaters[i+1] = count
+        floaters[i+2] = 1
+        count += 1
 
-    # initialize arrays for the spring forces and VDW forces
-    spring_forces = [[0 for x in range(len(floaters))] for y in range(len(floaters)-1)]
-    VDW_forces = np.zeros(len(floaters))
+    # compute the changing positions of the atoms as a result of the spring
+    # and VDW forces acting on them
+    gFlow = odeint(spring_and_VDWForce, floaters, t, atol=1.4e-10)
 
-    # initialize arrays for offsets, dx, dy, dz and rhat
-    k_x = np.zeros(len(floaters))
-    k_y = np.zeros(len(floaters))
+    # write the results to gFlow_chain.txt for use in plotting
+    np.savetxt('gFlow_chain.txt', gFlow)
 
-    dx = np.zeros(len(floaters))
-    dy = np.zeros(len(floaters))
-    dz = np.zeros(len(floaters))
-
-    rhat = np.zeros(len(floaters))
-
-    # compute offsets
-    for i in range(len(k_x)):
-        k_x[i] = floaters[i][0]%h_x
-        k_y[i] = floaters[i][1]%h_y
-
-    # define the size of the substrate surrounding the floaters
-    a = np.arange(-2,3,1)
-
-
-
-spring_and_VDWForce(floaters)
-
+    pprint.pprint(gFlow)
+    pprint.pprint(gFlow[-1])

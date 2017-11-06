@@ -3,7 +3,7 @@
 #               connecting them with a spring
 # Author: Christopher Parker
 # Created: Mon Oct 16, 2017 | 12:35P EDT
-# Last Modified: Fri Nov 03, 2017 | 01:50P EDT
+# Last Modified: Sat Nov 04, 2017 | 02:06P EDT
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -51,16 +51,16 @@ def spring_and_VDWForce(r,t):
     r2 = r[3:]
 
     # initialize total_spring_force and total_VDW_force
-    total_spring_force = np.zeros((6,))
-    total_VDW_force = np.zeros((6,))
+    total_spring_force = np.zeros(6)
+    total_VDW_force = np.zeros(6)
 
     # initialize offsets, dx, dy, dz and r_hat as arrays
-    k_x = np.zeros((2,))
-    k_y = np.zeros((2,))
-    dx = np.zeros((2,))
-    dy = np.zeros((2,))
-    dz = np.zeros((2,))
-    r_hat = np.zeros((2,))
+    k_x = np.zeros(2)
+    k_y = np.zeros(2)
+    dx = np.zeros(2)
+    dy = np.zeros(2)
+    dz = np.zeros(2)
+    r_hat = np.zeros(2)
 
     # compute the offsets
     k_x[0] = (r1[0]+.5)%h_x
