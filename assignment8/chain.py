@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Mon Nov 06, 2017 | 01:53P EST
+# Last Modified: Tue Nov 07, 2017 | 01:41P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -25,6 +25,7 @@
 #                                                                      #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
+import matplotlib.pyplot as plt
 import numpy as np
 from numpy.linalg import norm
 from scipy.integrate import odeint
@@ -34,6 +35,9 @@ import pprint
 # define the number of floaters
 floaters = np.zeros(4*3)
 n = len(floaters)
+
+# set number of substrate atoms (substrate will be 2*ns + 1 side lengths)
+ns = 6
 
 def spring_and_VDWForce(floaters, t):
 
@@ -61,8 +65,10 @@ def spring_and_VDWForce(floaters, t):
     dy = np.zeros(m)
     dz = np.zeros(m)
 
+    # CREATE A PARAMETER FOR NUMBER OF SUBSTRATE ATOMS TO HAVE WITH THE
+    # OTHER PARAMETERS AT TOP OF CODE
     # define the size of the substrate surrounding the floaters
-    a = np.arange(-6,7,1)
+    a = np.arange(-ns,ns+1,1)
 
     # rhat needs to be a 3x5x5 matrix in this case
     rhat = np.zeros(m)
@@ -70,7 +76,7 @@ def spring_and_VDWForce(floaters, t):
     # compute offsets
     for i in range(m):
         k_x[i] = (floaters[i*3] + .5)%h_x
-        k_y[i] = (floaters[i*3] + .5)%h_y
+        k_y[i] = (floaters[i*3+1] + .5)%h_y
 
     # compute the distances of the floating atom from the substrate atoms
     # and the VDW forces acting on them as a result
@@ -105,6 +111,27 @@ def spring_and_VDWForce(floaters, t):
 
     return total_spring_and_VDW_force
 
+# function to compute VDW energy for plotting
+def VDW(r):
+
+    x = r[0]
+    y = r[1]
+    z = r[2]
+
+    # Offset k (x mod h for the x-coordinate of the floating atom)
+    k_x = x%h_x
+    k_y = y%h_y
+
+    E_v = 0
+    a = np.arange(-ns,ns+1,1) # set the values of r_j which we need
+
+    for i in range(len(a)):
+        for j in range(len(a)):
+            r = np.sqrt((k_x + a[i]*h_x)**2 + (k_y + a[j]*h_y)**2 + z**2)
+            E_v += w*((sigma**12/r**12) - 2*(sigma**6/r**6))
+
+    return E_v
+
 if __name__ == '__main__':
 
     # set the constants
@@ -137,3 +164,31 @@ if __name__ == '__main__':
 
     pprint.pprint(gFlow)
     pprint.pprint(gFlow[-1])
+
+    # create a figure with 4 subplots to examine behavior of a single atom
+#    VDW_energy = np.zeros(len(gFlow[:]))
+#    for i in range(len(VDW_energy)):
+#        VDW_energy[i] = VDW(gFlow[i])
+#    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
+#
+#    # plot the total energy of the system and each individual atom
+#    ax1.plot(t, VDW_energy, 'k', label="Total")
+#    ax1.set_title("Energies")
+#    ax1.legend()
+#
+#    # plot the x coords of both atoms
+#    ax2.plot(t, gFlow[:,0], 'b', label="Atom 1")
+#    ax2.set_title("x coordinates")
+#    ax2.legend()
+#
+#    # plot the y coords of both atoms
+#    ax3.plot(t, gFlow[:,1], 'b', label="Atom 1")
+#    ax3.set_title("y coordinates")
+#    ax3.legend()
+#
+#    # plot the z coords of both atoms
+#    ax4.plot(t, gFlow[:,2], 'b', label="Atom 1")
+#    ax4.set_title("z coordinates")
+#    ax4.legend()
+#
+#    plt.show()
