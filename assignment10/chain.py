@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Thu Nov 16, 2017 | 12:41P EST
+# Last Modified: Thu Nov 16, 2017 | 04:05P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -58,28 +58,11 @@ def spring_and_VDWForce(floaters, t):
     # initialize arrays for the spring forces and VDW forces
     combined_spring_forces = np.zeros(n)
     combined_VDW_forces = np.zeros(n)
-    gradV_common = np.zeros(m)
     VDW_force = [[0 for i in range(3)] for j in range(m)]
     spring_force = [[0 for i in range(3)] for j in range(m)]
 
-    # initialize arrays for offsets, dx, dy, dz and rhat
-    k_x = np.zeros(m)
-    k_y = np.zeros(m)
-
-    dx = np.zeros(m)
-    dy = np.zeros(m)
-    dz = np.zeros(m)
-
     # define the size of the substrate surrounding the floaters
     a = np.arange(-ns,ns+1,1)
-
-    # rhat needs to be a 3x5x5 matrix in this case
-    rhat = np.zeros(m)
-
-    # compute offsets
-    for i in range(m):
-        k_x[i] = (floaters[i*3] + .5)%h_x
-        k_y[i] = (floaters[i*3+1] + .5)%h_y
 
     # compute the distances of the floating atom from the substrate atoms
     # and the VDW forces acting on them as a result
@@ -87,16 +70,20 @@ def spring_and_VDWForce(floaters, t):
         for i in range(len(a)):
             for k in range(m):
 
+                # compute the offsets
+                k_x = (r[k][0] + .5)%h_x
+                k_y = (r[k][1] + .5)%h_y
+
                 # compute dx, dy, dz and rhat
-                dx[k] = k_x[k] - .5 + a[i]*h_x
-                dy[k] = k_y[k] - .5 + a[j]*h_y
-                dz[k] = floaters[k*3 + 2]
-                rhat[k] = np.sqrt(dx[k]**2 + dy[k]**2 + dz[k]**2)
+                dx = k_x - .5 + a[i]*h_x
+                dy = k_y - .5 + a[j]*h_y
+                dz = r[k][2]
+                rhat = np.sqrt(dx**2 + dy**2 + dz**2)
 
                 # this is the gradient of V (computed by hand), it is used to compute the
                 # VDW forces acting on the floating atoms
-                gradV_common[k] = (12*w*((sigma**6)/(rhat[k]**8)-(sigma**12)/(rhat[k]**14)))
-                VDW_force[k] = -gradV_common[k]*np.array([dx[k], dy[k], dz[k]])
+                gradV_common = (12*w*((sigma**6)/(rhat**8)-(sigma**12)/(rhat**14)))
+                VDW_force[k] = -gradV_common*np.array([dx, dy, dz])
 
             # combine the VDW forces for all floating atoms
             combined_VDW_forces += np.hstack(VDW_force)
@@ -144,7 +131,7 @@ if __name__ == '__main__':
     h_x = 1
     h_y = 1
 
-    k_s = 500
+    k_s = 5
     l = 2
 
     # define the time interval for the gradient flow
@@ -158,11 +145,6 @@ if __name__ == '__main__':
         floaters[i+2] = 1
         count += 1
 
-    floaters[:2] = floaters[:2]*.01+.5
-    floaters[3:5] = floaters[3:5]*.01+.5
-    floaters[6:8] = floaters[6:8]*.01+.5
-    floaters[9:11] = floaters[9:11]*.01+.5
-
     # compute the changing positions of the atoms as a result of the spring
     # and VDW forces acting on them
     gFlow = odeint(spring_and_VDWForce, floaters, t, atol=1.4e-10)
@@ -171,38 +153,9 @@ if __name__ == '__main__':
     dist2 = norm(gFlow[-1,3:6]-gFlow[-1,6:9])
     dist3 = norm(gFlow[-1,6:9]-gFlow[-1,9:])
     print(dist1,dist2,dist3, sep=', ')
+
     # write the results to gFlow_chain.txt for use in plotting
     np.savetxt('gFlow_chain.txt', gFlow)
 
     pprint.pprint(gFlow)
     pprint.pprint(gFlow[-1])
-
-    # create a figure with 4 subplots to examine behavior of a single atom
-#    VDW_energy = [[0 for i in range(int(m))] for j in range(len(gFlow[:]))]
-#    for i in range(int(m)):
-#        for j in range(len(gFlow[:])):
-#            VDW_energy[j][i] = VDW(gFlow[j,i*3:i*3+3])
-#
-#    f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
-#
-#    # plot the total energy of the system and each individual atom
-#    ax1.plot(t, VDW_energy, 'k', label="Total")
-#    ax1.set_title("Energies")
-#    ax1.legend()
-#
-#    # plot the x coords of both atoms
-#    ax2.plot(t, gFlow[:,0], 'b', label="Atom 1")
-#    ax2.set_title("x coordinates")
-#    ax2.legend()
-#
-#    # plot the y coords of both atoms
-#    ax3.plot(t, gFlow[:,1], 'b', label="Atom 1")
-#    ax3.set_title("y coordinates")
-#    ax3.legend()
-#
-#    # plot the z coords of both atoms
-#    ax4.plot(t, gFlow[:,2], 'b', label="Atom 1")
-#    ax4.set_title("z coordinates")
-#    ax4.legend()
-#
-#    plt.show()
