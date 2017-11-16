@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Tue Nov 14, 2017 | 11:40P EST
+# Last Modified: Thu Nov 16, 2017 | 12:41P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -40,6 +40,10 @@ m = n/3
 # set number of substrate atoms (substrate will be 2*ns + 1 side lengths)
 ns = 10
 
+# this is the RHS of the system of ODEs solved by odeint. It returns the forces
+# acting on each floater in the x, y and z directions
+# CLEAN UP THIS FUNCTION SO IT IS NOT COMPUTING AND STORING THINGS THAT CAN BE
+# COMPUTED AT EACH LOOP AND NOT STORED IN AN ARRAY
 def spring_and_VDWForce(floaters, t):
 
     # compute number of atoms
@@ -66,8 +70,6 @@ def spring_and_VDWForce(floaters, t):
     dy = np.zeros(m)
     dz = np.zeros(m)
 
-    # CREATE A PARAMETER FOR NUMBER OF SUBSTRATE ATOMS TO HAVE WITH THE
-    # OTHER PARAMETERS AT TOP OF CODE
     # define the size of the substrate surrounding the floaters
     a = np.arange(-ns,ns+1,1)
 
