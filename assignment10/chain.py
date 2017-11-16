@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Thu Nov 16, 2017 | 04:05P EST
+# Last Modified: Thu Nov 16, 2017 | 04:15P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -42,8 +42,6 @@ ns = 10
 
 # this is the RHS of the system of ODEs solved by odeint. It returns the forces
 # acting on each floater in the x, y and z directions
-# CLEAN UP THIS FUNCTION SO IT IS NOT COMPUTING AND STORING THINGS THAT CAN BE
-# COMPUTED AT EACH LOOP AND NOT STORED IN AN ARRAY
 def spring_and_VDWForce(floaters, t):
 
     # compute number of atoms
@@ -92,8 +90,9 @@ def spring_and_VDWForce(floaters, t):
     # spring forces acting on the atoms
     for i in range(m-1):
         gradE_common = k_s*(norm(r[i]-r[i+1]) - l)/norm(r[i] - r[i+1])
-        spring_force[i] += -gradE_common*np.array([(r[i][0]-r[i+1][0]),(r[i][1]-r[i+1][1]),(r[i][2]-r[i+1][2])])
-        spring_force[i+1] = gradE_common*np.array([(r[i][0]-r[i+1][0]),(r[i][1]-r[i+1][1]),(r[i][2]-r[i+1][2])])
+        current_sf = -gradE_common*np.array([(r[i][0]-r[i+1][0]),(r[i][1]-r[i+1][1]),(r[i][2]-r[i+1][2])])
+        spring_force[i] += current_sf
+        spring_force[i+1] = -current_sf
 
 
     combined_spring_forces = np.hstack(spring_force)
@@ -149,6 +148,8 @@ if __name__ == '__main__':
     # and VDW forces acting on them
     gFlow = odeint(spring_and_VDWForce, floaters, t, atol=1.4e-10)
 
+    # compute and print the distance between each pair of bonded atoms (for
+    # a 4 atom chain) for debugging purposes
     dist1 = norm(gFlow[-1,:3]-gFlow[-1,3:6])
     dist2 = norm(gFlow[-1,3:6]-gFlow[-1,6:9])
     dist3 = norm(gFlow[-1,6:9]-gFlow[-1,9:])
@@ -157,5 +158,6 @@ if __name__ == '__main__':
     # write the results to gFlow_chain.txt for use in plotting
     np.savetxt('gFlow_chain.txt', gFlow)
 
+    # print the output of odeint
     pprint.pprint(gFlow)
     pprint.pprint(gFlow[-1])
