@@ -2,7 +2,7 @@
 # Description: A chain of bonded atoms floating above a rectangular substrate.
 # Author: Christopher Parker
 # Created: Fri Nov 03, 2017 | 10:32P EDT
-# Last Modified: Thu Nov 16, 2017 | 04:15P EST
+# Last Modified: Wed Nov 22, 2017 | 01:51P EST
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 #                           GNU GPL LICENSE                            #
@@ -31,14 +31,16 @@ from numpy.linalg import norm
 from scipy.integrate import odeint
 from IPython import embed
 import pprint
+import time
 
+start_time = time.time()
 # define the number of floaters
-floaters = np.zeros(4*3)
+floaters = np.zeros(10*3)
 n = len(floaters)
 m = n/3
 
 # set number of substrate atoms (substrate will be 2*ns + 1 side lengths)
-ns = 10
+ns = 5
 
 # this is the RHS of the system of ODEs solved by odeint. It returns the forces
 # acting on each floater in the x, y and z directions
@@ -131,16 +133,16 @@ if __name__ == '__main__':
     h_y = 1
 
     k_s = 5
-    l = 2
+    l = 1
 
     # define the time interval for the gradient flow
-    t = np.linspace(0,1,10)
+    t = np.linspace(0,6,20)
 
     # set the positions of the floating atoms
     count = 0
     for i in range(0,n,3):
         floaters[i] = count
-        floaters[i+1] = count
+        floaters[i+1] = 1.7*count
         floaters[i+2] = 1
         count += 1
 
@@ -150,10 +152,10 @@ if __name__ == '__main__':
 
     # compute and print the distance between each pair of bonded atoms (for
     # a 4 atom chain) for debugging purposes
-    dist1 = norm(gFlow[-1,:3]-gFlow[-1,3:6])
-    dist2 = norm(gFlow[-1,3:6]-gFlow[-1,6:9])
-    dist3 = norm(gFlow[-1,6:9]-gFlow[-1,9:])
-    print(dist1,dist2,dist3, sep=', ')
+    #dist1 = norm(gFlow[-1,:3]-gFlow[-1,3:6])
+#    dist2 = norm(gFlow[-1,3:6]-gFlow[-1,6:9])
+#    dist3 = norm(gFlow[-1,6:9]-gFlow[-1,9:])
+#    print(dist1,dist2,dist3, sep=', ')
 
     # write the results to gFlow_chain.txt for use in plotting
     np.savetxt('gFlow_chain.txt', gFlow)
@@ -161,3 +163,6 @@ if __name__ == '__main__':
     # print the output of odeint
     pprint.pprint(gFlow)
     pprint.pprint(gFlow[-1])
+
+    end_time = time.time()
+    print(end_time - start_time)
