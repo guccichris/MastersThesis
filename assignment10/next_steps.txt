@@ -1,7 +1,0 @@
-- First, clean up code for efficiency
-- Look at plots in R^3 to see how the atoms behave for very long chains
-  (watch the chain actually move)
-    - Use a for loop to create new plots for each position of the floaters,
-      probably will have to add a pause between each new plot so it doesn't
-      move too quickly
-    - Play with different parameters to see how the simulation changes

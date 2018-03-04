@@ -1,6 +1,0 @@
-Assignment 11
-
-- Add a plot of total energy vs time (with a sliding point on the plot that moves as the simulation moves)
-- Compare time running in Jupyter vs on my machine
-- Try even longer chains and play with the slope of the line on which they start
-X Figure out how to get a single animation player for dots connected by lines
